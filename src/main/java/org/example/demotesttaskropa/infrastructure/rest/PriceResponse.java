@@ -1,7 +1,7 @@
-package org.example.demotesttaskropa.dto;
+package org.example.demotesttaskropa.infrastructure.rest;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import org.example.demotesttaskropa.entity.Price;
+import org.example.demotesttaskropa.domain.model.Price;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -17,11 +17,11 @@ public record PriceResponse (
 ) {
     public PriceResponse(Price price) {
         this(
-                price.getBrandId(),
-                price.getProductId(),
-                price.getPriceList(),
-                price.getStartDate(),
-                price.getEndDate(),
-                price.getPrice());
+                price.brandId(),
+                price.productId(),
+                price.priceList(),
+                price.startDate(),
+                price.endDate(),
+                price.price());
     }
 }

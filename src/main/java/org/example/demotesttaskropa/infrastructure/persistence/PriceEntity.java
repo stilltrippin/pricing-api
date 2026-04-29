@@ -1,49 +1,38 @@
-package org.example.demotesttaskropa.entity;
+package org.example.demotesttaskropa.infrastructure.persistence;
 
 import jakarta.persistence.*;
+import org.example.demotesttaskropa.domain.model.Price;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Table(name = "prices")
 @Entity
-public class Price {
+@Table(name = "prices")
+public class PriceEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private Long brandId;
     private Long productId;
-
     private Integer priceList;
     private Integer priority;
     private BigDecimal price;
     private String curr;
-
     private LocalDateTime startDate;
     private LocalDateTime endDate;
 
-    public Price() {}
-
-    public Price(Long brandId, Long productId, Integer priceList, Integer priority,
-                 BigDecimal price, String curr, LocalDateTime startDate, LocalDateTime endDate) {
-        this.brandId = brandId;
-        this.productId = productId;
-        this.priceList = priceList;
-        this.priority = priority;
-        this.price = price;
-        this.curr = curr;
-        this.startDate = startDate;
-        this.endDate = endDate;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
+    public Price toDomain() {
+        return new Price(id, brandId, productId, priceList,
+                priority, price, curr, startDate, endDate);
     }
 
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public Long getBrandId() {

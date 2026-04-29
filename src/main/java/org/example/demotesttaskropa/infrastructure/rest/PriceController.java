@@ -1,8 +1,7 @@
-package org.example.demotesttaskropa.controller;
+package org.example.demotesttaskropa.infrastructure.rest;
 
-import org.example.demotesttaskropa.dto.PriceResponse;
-import org.example.demotesttaskropa.entity.Price;
-import org.example.demotesttaskropa.service.PriceService;
+import org.example.demotesttaskropa.application.usecase.GetPriceUseCase;
+import org.example.demotesttaskropa.domain.model.Price;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,19 +14,19 @@ import java.time.LocalDateTime;
 @RequestMapping("/prices")
 public class PriceController {
 
-    private  final PriceService priceService;
+    private final GetPriceUseCase getPriceUseCase;
 
-    public PriceController(PriceService priceService) {
-        this.priceService = priceService;
+    public PriceController(GetPriceUseCase getPriceUseCase) {
+        this.getPriceUseCase = getPriceUseCase;
     }
 
     @GetMapping
     public PriceResponse getPrice(
-            @RequestParam @DateTimeFormat (iso = DateTimeFormat.ISO.DATE) LocalDateTime date,
+            @RequestParam @DateTimeFormat (iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime date,
             @RequestParam Long productId,
             @RequestParam Long brandId
     ){
-        Price price = priceService.resolvePrice(productId, brandId, date);
+        Price price = getPriceUseCase.execute(productId, brandId, date);
         return new PriceResponse(price);
     }
 

@@ -43,7 +43,7 @@ class DemoTestTaskRopaApplicationTests {
     }
 
     @Test
-    @DisplayName("Test 2: 15.06.2020 10:00:00 - Price should be 30.50 EUR")
+    @DisplayName("Test 4: 15.06.2020 10:00:00 - Price should be 30.50 EUR")
     void test4() throws Exception {
         performRequest(35455L, 1L, "2020-06-15T10:00:00")
                 .andExpect(jsonPath("$.price").value("30.50"))
@@ -56,6 +56,69 @@ class DemoTestTaskRopaApplicationTests {
         performRequest(35455L, 1L, "2020-06-16T21:00:00")
                 .andExpect(jsonPath("$.price").value("38.95"))
                 .andExpect(jsonPath("$.priceList").value(4));
+    }
+
+    @Test
+    @DisplayName("Returns 404 when no price exists for given parameters")
+    void testNotFound() throws Exception {
+        mockMvc.perform(get("/prices")
+                        .param("productId", "99999")
+                        .param("brandId", "99999")
+                        .param("date", "2020-06-14T10:00:00")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value(404))
+                .andExpect(jsonPath("$.error").value("Not Found"));
+    }
+
+    @Test
+    @DisplayName("Returns 400 when date parameter is missing")
+    void testMissingDate() throws Exception {
+        mockMvc.perform(get("/prices")
+                        .param("productId", "35455")
+                        .param("brandId", "1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.error").value("Bad Request"));
+    }
+
+    @Test
+    @DisplayName("Returns 400 when date format is invalid")
+    void testInvalidDateFormat() throws Exception {
+        mockMvc.perform(get("/prices")
+                        .param("productId", "35455")
+                        .param("brandId", "1")
+                        .param("date", "not-a-date")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.error").value("Bad Request"));
+    }
+
+    @Test
+    @DisplayName("Returns 400 when productId is missing")
+    void testMissingProductId() throws Exception {
+        mockMvc.perform(get("/prices")
+                        .param("brandId", "1")
+                        .param("date", "2020-06-14T10:00:00")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.error").value("Bad Request"));
+    }
+
+    @Test
+    @DisplayName("Returns 400 when productId is not a number")
+    void testInvalidProductIdType() throws Exception {
+        mockMvc.perform(get("/prices")
+                        .param("productId", "abc")
+                        .param("brandId", "1")
+                        .param("date", "2020-06-14T10:00:00")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.error").value("Bad Request"));
     }
 
     private ResultActions performRequest (Long productId, Long brandId, String date) throws Exception{
