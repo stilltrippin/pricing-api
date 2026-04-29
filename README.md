@@ -67,17 +67,21 @@ The following scenarios are covered:
 4. 2020-06-15 10:00 → Price = 30.50
 5. 2020-06-16 21:00 → Price = 38.95
 
-The project follows a layered architecture:
+The project follows hexagonal architecture (ports & adapters):
 
-- Controller → handles HTTP requests
-- Service → contains business logic
-- Repository → handles data access
-- DTO → defines API responses
+Domain layer
+* Price — pure domain model, no framework dependencies
+* PriceRepositoryPort — port interface defining the data access contract
 
-- Used Spring Data JPA derived queries to simplify repository logic
-- Returned a single result using priority-based selection
-- Used DTOs to avoid exposing entity models
-- Used MockMvc for integration-style testing
+Application layer
+* GetPriceUseCase — orchestrates business logic, depends only on the port
+
+Infrastructure layer
+* PriceRepositoryAdapter — implements the port using Spring Data JPA
+* PriceController — REST adapter, translates HTTP to use case calls
+* PriceResponse / ErrorResponse — REST DTOs
+* Applied hexagonal architecture to decouple domain logic from Spring and JPA
+* Implemented GlobalExceptionHandler to control all error responses (400, 404, 500)
 
 Swagger UI available at:
 http://localhost:8080/swagger-ui.html
