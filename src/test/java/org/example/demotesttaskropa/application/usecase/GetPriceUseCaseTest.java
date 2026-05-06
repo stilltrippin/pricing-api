@@ -13,7 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Optional;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -47,8 +47,8 @@ class GetPriceUseCaseTest {
     @Test
     @DisplayName("Returns price when repository finds a match")
     void execute_returnsPriceWhenFound() {
-        when(priceRepositoryPort.findTopPriorityPrice(PRODUCT_ID, BRAND_ID, DATE))
-                .thenReturn(Optional.of(samplePrice));
+        when(priceRepositoryPort.findApplicablePrices(PRODUCT_ID, BRAND_ID, DATE))
+                .thenReturn(List.of(samplePrice));
 
         Price result = getPriceUseCase.execute(PRODUCT_ID, BRAND_ID, DATE);
 
@@ -61,8 +61,8 @@ class GetPriceUseCaseTest {
     @Test
     @DisplayName("Throws PriceNotFoundException when no price matches")
     void execute_throwsWhenNotFound() {
-        when(priceRepositoryPort.findTopPriorityPrice(PRODUCT_ID, BRAND_ID, DATE))
-                .thenReturn(Optional.empty());
+        when(priceRepositoryPort.findApplicablePrices(PRODUCT_ID, BRAND_ID, DATE))
+                .thenReturn(List.of());
 
         assertThatThrownBy(() -> getPriceUseCase.execute(PRODUCT_ID, BRAND_ID, DATE))
                 .isInstanceOf(PriceNotFoundException.class);
@@ -71,12 +71,12 @@ class GetPriceUseCaseTest {
     @Test
     @DisplayName("Calls repository exactly once with correct arguments")
     void execute_callsRepositoryOnce() {
-        when(priceRepositoryPort.findTopPriorityPrice(PRODUCT_ID, BRAND_ID, DATE))
-                .thenReturn(Optional.of(samplePrice));
+        when(priceRepositoryPort.findApplicablePrices(PRODUCT_ID, BRAND_ID, DATE))
+                .thenReturn(List.of(samplePrice));
 
         getPriceUseCase.execute(PRODUCT_ID, BRAND_ID, DATE);
 
         verify(priceRepositoryPort, times(1))
-                .findTopPriorityPrice(PRODUCT_ID, BRAND_ID, DATE);
+                .findApplicablePrices(PRODUCT_ID, BRAND_ID, DATE);
     }
 }

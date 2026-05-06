@@ -15,7 +15,11 @@ public class PriceEntity {
     private Long id;
     private Long brandId;
     private Long productId;
+
+    @Column(name = "price_list")
     private Integer priceList;
+
+    @Column(name = "priority")
     private Integer priority;
     private BigDecimal price;
     private String curr;

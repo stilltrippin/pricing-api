@@ -5,7 +5,7 @@ import org.example.demotesttaskropa.domain.port.PriceRepositoryPort;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
+import java.util.List;
 
 @Component
 public class PriceRepositoryAdapter implements PriceRepositoryPort {
@@ -17,9 +17,11 @@ public class PriceRepositoryAdapter implements PriceRepositoryPort {
     }
 
     @Override
-    public Optional<Price> findTopPriorityPrice(Long productId, Long brandId, LocalDateTime date) {
+    public List<Price> findApplicablePrices(Long productId, Long brandId, LocalDateTime date) {
         return priceRepository
-                .findTopPriorityPrice(productId, brandId, date)
-                .map(PriceEntity::toDomain);
+                .findApplicablePrices(productId, brandId, date)
+                .stream()
+                .map(PriceEntity::toDomain)
+                .toList();
     }
 }

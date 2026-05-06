@@ -6,6 +6,7 @@ import org.example.demotesttaskropa.exception.PriceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 
 @Service
 public class GetPriceUseCase {
@@ -17,7 +18,9 @@ public class GetPriceUseCase {
     }
 
     public Price execute(Long productId, Long brandId, LocalDateTime date) {
-        return priceRepositoryPort.findTopPriorityPrice(productId, brandId, date)
-                .orElseThrow(() -> new PriceNotFoundException(productId, brandId, date));
+       return priceRepositoryPort.findApplicablePrices(productId, brandId, date)
+               .stream()
+               .max(Comparator.comparing(Price::priority))
+               .orElseThrow(() -> new PriceNotFoundException(productId, brandId, date));
     }
 }
